@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import csvRoutes from './routes/csvRoutes.js';
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -23,9 +24,15 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Middleware
-app.use(cors()); // Enable CORS for frontend
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/csv', csvRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -44,7 +51,7 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       health: 'GET /api/health',
-      preview: 'POST /api/csv/preview (coming soon)',
+      preview: 'POST /api/csv/preview',
       process: 'POST /api/csv/process (coming soon)'
     }
   });
@@ -71,5 +78,6 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`📁 CSV Preview: POST http://localhost:${PORT}/api/csv/preview`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });

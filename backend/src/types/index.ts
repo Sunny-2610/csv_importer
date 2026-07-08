@@ -8,3 +8,10 @@ export interface ApiResponse<T = any> {
   error?: string;
   message?: string;
 }
+
+export interface PreviewResponse {
+  success: boolean;
+  rows: ParsedCSVRow[];
+  total: number;
+  headers: string[];
+}
